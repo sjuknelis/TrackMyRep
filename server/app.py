@@ -21,6 +21,7 @@ def get_keywords(text):
   seen_add = seen.add
   ptexts = [pt for pt in ptexts if not (pt in seen or seen_add(pt))]
   ptexts = [pt for pt in ptexts if len([w for w in pt.split(" ") if w not in words]) == 0]
+  ptexts = [pt for pt in ptexts if len(pt) > 3]
 
   return ptexts[:10]
 

@@ -1,7 +1,7 @@
-server/votes
-server/__pycache__
-client/pop*
-cnbc*
+.DS_Store
+node_modules
+/dist
+
 
 # local env files
 .env.local
@@ -21,9 +21,3 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-
-# Vue Browser Extension Output
-*.pem
-*.pub
-*.zip
-/artifacts
