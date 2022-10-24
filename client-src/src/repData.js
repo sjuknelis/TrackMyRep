@@ -5,49 +5,13 @@ const repData = {"results":[{"address_components":{"number":"16","street":"Speen
   return repData;
 }*/
 
-async function getRepData() {
-  function getCoords() {
-    return new Promise(resolve => {
-      navigator.geolocation.getCurrentPosition(position => {
-        resolve(position.coords);
-      });
+function getRepData() {
+  return new Promise(resolve => {
+    // eslint-disable-next-line
+    chrome.storage.local.get(["repData"],result => {
+      resolve(result.repData);
     });
-  }
-  function getStorage(key) {
-    return new Promise(resolve => {
-      // eslint-disable-next-line
-      chrome.storage.local.get([key],result => {
-        resolve(result[key]);
-      });
-    })
-  }
-  function setStorage(key,value) {
-    return new Promise(resolve => {
-      const obj = {};
-      obj[key] = value;
-      // eslint-disable-next-line
-      chrome.storage.local.set(obj,() => {
-        resolve();
-      });
-    });
-  }
-
-  const storedRepData = await getStorage("repData");
-  console.log("s1",storedRepData);
-  if ( storedRepData ) {
-    console.log("s",storedRepData);
-    return storedRepData;
-  }
-  let coords = await getCoords();
-  coords = {
-    latitude: 42.2897681,
-    longitude: -71.3874474
-  };
-  const response = await fetch(`https://api.geocod.io/v1.7/reverse?q=${coords.latitude},${coords.longitude}&fields=cd&api_key=2f0fb3787007bde333e78bb838bfeb66362d29d`);
-  const data = await response.json();
-  await setStorage("repData",repData);
-  console.log("n",repData);
-  return data;
+  });
 }
 
 export { getRepData };

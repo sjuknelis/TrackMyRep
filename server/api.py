@@ -1,38 +1,61 @@
 from functools import cmp_to_key
 import json,math,requests
 
-def get_bill_data(keyword,person):
+def get_bill_data(keyword,person,to_draw):
   with open("votes/search.json","r") as f:
     data = json.load(f)
   
-  shortf = [bill for bill in data if keyword in bill["short_title"].lower() and "amendment" not in bill["short_title"].lower()]
-  longf = [bill for bill in data if keyword in bill["title"].lower()]
+  def get_question(bill):
+    with open("votes/individual/%d-%d.json" % (bill["stamp"],bill["id"]),"r") as f:
+      data = json.load(f)
+    return data["results"]["votes"]["vote"]["question"]
+
+  shortf = [(bill,get_question(bill)) for bill in data if keyword in bill["short_title"].lower() and "amendment" not in bill["short_title"].lower() and "consideration" not in bill["short_title"].lower()]
 
   word_count = lambda x: len(x.split(" "))
-  for bill in shortf:
+  for (bill,question) in shortf:
     if word_count(bill["short_title"]) >= 12:
-      shortf.remove(bill)
-      longf.append(bill)
+      shortf.remove((bill,question))
 
+  def passage_sort(a,b):
+    a_bill,a_question = a
+    b_bill,b_question = b
+    a_val = 1 if a_question == "On Passage" else 0
+    b_val = 1 if b_question == "On Passage" else 0
+    return -(a_val - b_val)
   def short_compare(a,b):
-    stamp_diff = 2 * math.copysign(-(a["stamp"] - b["stamp"]),0)
-    return stamp_diff + word_count(a["short_title"]) - word_count(b["short_title"])
+    if passage_sort(a,b) != 0:
+      return passage_sort(a,b)
+    a_bill,a_question = a
+    b_bill,b_question = b
+    stamp_diff = 2 * math.copysign(-(a_bill["stamp"] - b_bill["stamp"]),0)
+    return stamp_diff + word_count(a_bill["short_title"]) - word_count(b_bill["short_title"])
   shortf.sort(key=cmp_to_key(short_compare))
   def long_compare(a,b):
-    return -(a["stamp"] - b["stamp"])
-  longf.sort(key=cmp_to_key(long_compare))
+    if passage_sort(a,b) != 0:
+      return passage_sort(a,b)
+    a_bill,a_question = a
+    b_bill,b_question = b
+    return -(a_bill["stamp"] - b_bill["stamp"])
 
-  selectable = (shortf + longf)[:2]
-  recents = [bill for bill in selectable]
-  recents.sort(key=cmp_to_key(long_compare))
-  recents = recents[:1]
-  selectable = [bill for bill in selectable if bill not in recents]
-  selected = recents + selectable[:1]
-
-  result = []
-  for bill in selected:
-    result.append({
+  selectable = shortf[:3]
+  recent = [item for item in selectable]
+  recent.sort(key=cmp_to_key(long_compare))
+  recent = recent[:to_draw]
+  selectable = [(bill,question) for (bill,question) in shortf if (bill,question) not in recent and bill["short_title"] not in [jbill["short_title"] for (jbill,jquestion) in recent]]
+  relevant = selectable[:to_draw]
+  result = ([],[])
+  for (bill,question) in recent:
+    result[0].append({
       "bill": bill,
+      "question": question,
+      "vote": get_vote_summary(bill,person)
+    })
+  result = ([],[])
+  for (bill,question) in relevant:
+    result[1].append({
+      "bill": bill,
+      "question": question,
       "vote": get_vote_summary(bill,person)
     })
   return result

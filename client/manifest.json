@@ -1,6 +1,6 @@
 {
-  "name": "Getting Started Example",
-  "description": "Build an Extension!",
+  "name": "TrackMyRep",
+  "description": "Get informed about your House representative's voting record every time you read a news article on the web.",
   "version": "1.0",
   "manifest_version": 3,
   "action": {
@@ -14,5 +14,9 @@
   ],
   "content_security_policy": {
     "extension_page":"script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
-  }
+  },
+  "permissions": [
+    "geolocation",
+    "storage"
+  ]
 }
