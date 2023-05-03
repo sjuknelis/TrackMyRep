@@ -2,7 +2,7 @@
   <TopBar />
   <div v-if="data" class="main-container">
     <h5>Relevant vote in Congress:</h5>
-    <BillBox :data="data[0]" :repData="repData" />
+    <BillBox :data="data[0][0]" :repData="repData" />
     <button class="btn btn-outline-primary full-button" @click="popout">See more votes</button>
   </div>
   <div v-else class="main-container">

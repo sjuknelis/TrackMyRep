@@ -2,7 +2,7 @@
   <TopBar />
   <div class="row main-container">
     <div v-if="repData" class="col-3 rep-info">
-      <!--<img :src="getRepImage(repInfo.bio.first_name,repInfo.bio.last_name)" />-->
+      <img class="rep" :src="getRepImage(repInfo.bio.first_name,repInfo.bio.last_name)" />
       <h3>{{ repInfo.bio.first_name }} {{ repInfo.bio.last_name }}</h3>
       <p>{{ districtName }} of {{ convertState(stateAbbr) }} – {{ PARTY_ADJECTIVES[repInfo.bio.party] }}</p>
       <p>Up for election: {{ electionYear }}</p>
@@ -24,15 +24,15 @@
       </p>
     </div>
     <div class="col-9 bill-boxes">
-      <h3>Most Recent Votes</h3>
-      <BillBox :data="data[0]" :repData="repData" />
-      <BillBox :data="data[2]" :repData="repData" />
-      <BillBox :data="data[4]" :repData="repData" />
+      <h3>Most Relevant Votes</h3>
+      <BillBox :data="data[0][0]" :repData="repData" />
+      <BillBox :data="data[0][1]" :repData="repData" />
+      <BillBox :data="data[0][2]" :repData="repData" />
       <hr />
-      <h3>Other Relevant Votes</h3>
-      <BillBox :data="data[1]" :repData="repData" />
-      <BillBox :data="data[3]" :repData="repData" />
-      <BillBox :data="data[5]" :repData="repData" />
+      <h3>Other Recent Votes</h3>
+      <BillBox :data="data[1][0]" :repData="repData" />
+      <BillBox :data="data[1][1]" :repData="repData" />
+      <BillBox :data="data[1][2]" :repData="repData" />
     </div>
   </div>
 </template>
@@ -91,8 +91,9 @@ body {
   height: calc(100vh - 80px);
   overflow-y: scroll;
 }
-img {
+img.rep {
   width: 100%;
   border-radius: 10px;
+  padding-bottom: .5rem;
 }
 </style>

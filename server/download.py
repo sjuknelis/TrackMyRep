@@ -1,4 +1,4 @@
-import requests,json,os
+import requests,json,os,time
 
 def get_summary_for(year,month):
   print("Downloading %d-%d summary" % (year,month))
@@ -54,5 +54,7 @@ if __name__ == "__main__":
       get_summary_for(year,month)
   for month in range(1,10):
     get_summary_for(2022,month)"""
-  #get_search_table()
+  now = time.localtime()
+  get_summary_for(now.tm_year,now.tm_mon + 1)
+  get_search_table()
   get_individuals()

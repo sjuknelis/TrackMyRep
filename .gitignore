@@ -1,4 +1,4 @@
-server/votes
+server/votes*
 server/__pycache__
 client/pop*
 cnbc*

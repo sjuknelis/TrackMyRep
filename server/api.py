@@ -1,5 +1,6 @@
 from functools import cmp_to_key
 import json,math,requests
+from sklearn.metrics import recall_score
 
 def get_bill_data(keyword,person,to_draw):
   with open("votes/search.json","r") as f:
@@ -38,7 +39,35 @@ def get_bill_data(keyword,person,to_draw):
     b_bill,b_question = b
     return -(a_bill["stamp"] - b_bill["stamp"])
 
-  selectable = shortf[:3]
+  short_titles = [bill["short_title"] for (bill,question) in shortf]
+  to_remove = []
+  for (index,(bill,question)) in enumerate(shortf):
+    if short_titles.index(bill["short_title"]) != index:
+      to_remove.append((bill,question))
+  for item in to_remove:
+    shortf.remove(item)
+
+  relevant = shortf[:to_draw]
+  recent_selectable = shortf[to_draw:10]
+  recent_selectable.sort(key=cmp_to_key(long_compare))
+  recent = recent_selectable[:to_draw]
+
+  result = ([],[])
+  for (bill,question) in relevant:
+    result[0].append({
+      "bill": bill,
+      "question": question,
+      "vote": get_vote_summary(bill,person)
+    })
+  for (bill,question) in recent:
+    result[1].append({
+      "bill": bill,
+      "question": question,
+      "vote": get_vote_summary(bill,person)
+    })
+  return result
+
+  """selectable = shortf[:3]
   recent = [item for item in selectable]
   recent.sort(key=cmp_to_key(long_compare))
   recent = recent[:to_draw]
@@ -58,7 +87,7 @@ def get_bill_data(keyword,person,to_draw):
       "question": question,
       "vote": get_vote_summary(bill,person)
     })
-  return result
+  return result"""
 
 def get_vote_summary(bill,person):
   with open("votes/individual/%d-%d.json" % (bill["stamp"],bill["id"]),"r") as f:
