@@ -1,5 +1,5 @@
 # TrackMyRep
-A Chrome browser extension to support civic awareness - coming soon to the Chrome web store!
+A Chrome browser extension to support civic awareness.
 
 <div align="center">
   <img src="screenshots/webpage.png" width="600" /><br /><br />
